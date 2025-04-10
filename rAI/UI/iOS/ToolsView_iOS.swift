@@ -130,10 +130,9 @@ struct Message: Identifiable {
 struct SelectTools: View {
     let toolOptions: [String]
     let onToolSelected: (String) -> Void
-    @Environment(\.dismiss) var dismiss  // Works on iOS 15+ to dismiss the sheet.
+    @Environment(\.dismiss) var dismiss
     @State private var searchText = ""
     
-    // Computed property that returns the alphabetically sorted and filtered tools.
     var filteredToolOptions: [String] {
         // First, sort the tools alphabetically.
         let sortedTools = toolOptions.sorted()

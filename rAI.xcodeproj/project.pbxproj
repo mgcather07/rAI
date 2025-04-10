@@ -115,7 +115,7 @@
 		F9D11D572DA76589005B8D94 /* HomeDashboard_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D11D562DA76589005B8D94 /* HomeDashboard_iOS.swift */; };
 		F9D11D5B2DA76D6B005B8D94 /* HomeDashboard_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D11D5A2DA76D6B005B8D94 /* HomeDashboard_macOS.swift */; };
 		F9D11D5D2DA771E1005B8D94 /* ToolsView_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D11D5C2DA771E1005B8D94 /* ToolsView_iOS.swift */; };
-		F9D11D5F2DA771ED005B8D94 /* Agent_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D11D5E2DA771ED005B8D94 /* Agent_iOS.swift */; };
+		F9D11D5F2DA771ED005B8D94 /* AgentView_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D11D5E2DA771ED005B8D94 /* AgentView_iOS.swift */; };
 		F9D11D612DA771FB005B8D94 /* Assistant_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D11D602DA771FB005B8D94 /* Assistant_iOS.swift */; };
 /* End PBXBuildFile section */
 
@@ -241,7 +241,7 @@
 		F9D11D562DA76589005B8D94 /* HomeDashboard_iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDashboard_iOS.swift; sourceTree = "<group>"; };
 		F9D11D5A2DA76D6B005B8D94 /* HomeDashboard_macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDashboard_macOS.swift; sourceTree = "<group>"; };
 		F9D11D5C2DA771E1005B8D94 /* ToolsView_iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView_iOS.swift; sourceTree = "<group>"; };
-		F9D11D5E2DA771ED005B8D94 /* Agent_iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agent_iOS.swift; sourceTree = "<group>"; };
+		F9D11D5E2DA771ED005B8D94 /* AgentView_iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentView_iOS.swift; sourceTree = "<group>"; };
 		F9D11D602DA771FB005B8D94 /* Assistant_iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assistant_iOS.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -474,7 +474,7 @@
 			children = (
 				F9D11D562DA76589005B8D94 /* HomeDashboard_iOS.swift */,
 				F9D11D5C2DA771E1005B8D94 /* ToolsView_iOS.swift */,
-				F9D11D5E2DA771ED005B8D94 /* Agent_iOS.swift */,
+				F9D11D5E2DA771ED005B8D94 /* AgentView_iOS.swift */,
 				F9D11D602DA771FB005B8D94 /* Assistant_iOS.swift */,
 				F9AE27A42D9F170600F7969A /* Components */,
 				F9AE28B02DA03E4500F7969A /* ChatView_iOS.swift */,
@@ -849,7 +849,7 @@
 			files = (
 				F9AE28662DA0353D00F7969A /* Image+Extension.swift in Sources */,
 				F9AE27F82DA0210700F7969A /* AgentSelectionView.swift in Sources */,
-				F9D11D5F2DA771ED005B8D94 /* Agent_iOS.swift in Sources */,
+				F9D11D5F2DA771ED005B8D94 /* AgentView_iOS.swift in Sources */,
 				F9AE27FA2DA0212800F7969A /* ConversationStatusView.swift in Sources */,
 				F9AE27C32D9F1B0B00F7969A /* DragAndDrop.swift in Sources */,
 				F9AE27C72D9F1C1E00F7969A /* MenuBarControlView_macOS.swift in Sources */,

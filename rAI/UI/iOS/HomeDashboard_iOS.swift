@@ -84,9 +84,7 @@ struct HomeDashboard_iOS: View {
                     }
                     
                     // The other buttons remain as before.
-                    Button(action: {
-                        print("Agent button tapped")
-                    }) {
+                    NavigationLink(destination: AgentView()) {
                         customSquareButton(
                             text: "Agent",
                             gradient: LinearGradient(
