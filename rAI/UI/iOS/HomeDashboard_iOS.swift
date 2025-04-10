@@ -84,9 +84,9 @@ struct HomeDashboard_iOS: View {
                     }
                     
                     // The other buttons remain as before.
-                    NavigationLink(destination: AgentView()) {
+                    NavigationLink(destination: AssistantView()) {
                         customSquareButton(
-                            text: "Agent",
+                            text: "Assistant",
                             gradient: LinearGradient(
                                 gradient: Gradient(colors: [Color.yellow, Color.orange]),
                                 startPoint: .topLeading,
@@ -95,11 +95,9 @@ struct HomeDashboard_iOS: View {
                         )
                     }
                     
-                    Button(action: {
-                        print("Assistant button tapped")
-                    }) {
+                    NavigationLink(destination: AgentView()) {
                         customSquareButton(
-                            text: "Assistant",
+                            text: "Agent",
                             gradient: LinearGradient(
                                 gradient: Gradient(colors: [Color.yellow, Color.orange]),
                                 startPoint: .topLeading,

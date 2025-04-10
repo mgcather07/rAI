@@ -1,5 +1,5 @@
 //
-//  AgentView_iOS.swift
+//  AgentView.swift
 //  rAI
 //
 //  Created by Michael Cather on 4/9/25.
@@ -8,29 +8,28 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Agent View (Main Chat Screen)
-
 struct AgentView: View {
-    // Dummy list of soccer team names as document options.
-    private let documentOptions = [
-        "BUSA United",
-        "Bama Strikers",
-        "Mobile Mariners",
-        "Montgomery Monarchs",
-        "Tuscaloosa Titans",
-        "Gulf Coast Rovers",
-        "Alabama Aces",
-        "BUSA Thunder",
-        "Capitol Crushers",
-        "Heart of Dixie FC"
+    // Updated list of AI dummy agent names.
+    @State private var selectedAgent: String = "Agents"
+    private let agentOptions = [
+        "How Smart",
+        "NeuralNet Analyzer",
+        "Data Whisperer",
+        "Cognitive Assistant",
+        "Visionary AI",
+        "Predictive Modeler",
+        "Deep Learning Lab",
+        "Mind Meld",
+        "Sentiment Synthesizer",
+        "Robo Advisor"
     ]
     
     // Chat-like message states.
     @State private var inputText: String = ""
-    @State private var messages: [ChatMessage] = []
+    @State private var messages: [Message] = []
     
-    // Controls navigation to the document list.
-    @State private var navigateToDocuments: Bool = false
+    // State to control whether the agent selection sheet is presented.
+    @State private var showAgentSheet: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -62,7 +61,7 @@ struct AgentView: View {
                         }
                         .padding()
                     }
-                    // Auto-scroll to the last message when one is added.
+                    // Auto scroll to the bottom when a new message is added.
                     .onChange(of: messages.count) { _ in
                         if let lastMessage = messages.last {
                             withAnimation {
@@ -82,40 +81,39 @@ struct AgentView: View {
                     Button("Send") {
                         guard !inputText.isEmpty else { return }
                         
-                        // Append the user's message.
-                        let userMessage = ChatMessage(text: inputText, isUser: true)
+                        // Append user's message as one bubble.
+                        let userMessage = Message(text: inputText, isUser: true)
                         messages.append(userMessage)
                         
-                        // Append a dummy response.
-                        let dummyResponse = ChatMessage(text: "This is a dummy response.", isUser: false)
+                        // Append dummy response as another bubble.
+                        let dummyResponse = Message(text: "No, he is a complete idiot", isUser: false)
                         messages.append(dummyResponse)
                         
-                        // Clear the input.
+                        // Clear the input text after sending.
                         inputText = ""
                     }
                     .padding(.horizontal, 5)
                 }
                 .padding()
-                
-                // A hidden NavigationLink that activates when navigateToDocuments is true.
-                NavigationLink(
-                    destination: SelectDocumentsView(documentOptions: documentOptions),
-                    isActive: $navigateToDocuments,
-                    label: { EmptyView() }
-                )
-            } // End of VStack
-            .navigationTitle("Agent")
+            }
+            .navigationBarTitle("Agent")
             .navigationBarTitleDisplayMode(.large)
+            // MARK: - Toolbar with Underlined Agent Button
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    // The Documents button is enabled only after at least one user message.
                     Button(action: {
-                        navigateToDocuments = true
+                        showAgentSheet = true
                     }) {
-                        Text("Documents")
+                        Text(selectedAgent)
                             .underline()
                     }
-                    .disabled(messages.filter { $0.isUser }.isEmpty)
+                }
+            }
+            // Present the SelectAgent sheet.
+            .sheet(isPresented: $showAgentSheet) {
+                SelectAgent(agentOptions: agentOptions) { agent in
+                    selectedAgent = agent
+                    showAgentSheet = false
                 }
             }
         }
@@ -123,124 +121,44 @@ struct AgentView: View {
     }
 }
 
-// MARK: - ChatMessage Model
 
-struct ChatMessage: Identifiable {
-    let id = UUID()
-    let text: String
-    let isUser: Bool
-}
-
-// MARK: - SelectDocumentsView
-
-struct SelectDocumentsView: View {
-    let documentOptions: [String]
+struct SelectAgent: View {
+    let agentOptions: [String]
+    let onAgentSelected: (String) -> Void
+    @Environment(\.dismiss) var dismiss
     @State private var searchText = ""
     
-    // Computed property: sort and filter the document options.
-    var filteredDocuments: [String] {
-        let sortedDocs = documentOptions.sorted()
+    var filteredAgentOptions: [String] {
+        // First, sort the agents alphabetically.
+        let sortedAgents = agentOptions.sorted()
+        // Then filter based on the search text.
         if searchText.isEmpty {
-            return sortedDocs
+            return sortedAgents
         } else {
-            return sortedDocs.filter { $0.localizedCaseInsensitiveContains(searchText) }
+            return sortedAgents.filter { $0.localizedCaseInsensitiveContains(searchText) }
         }
     }
     
     var body: some View {
-        List(filteredDocuments, id: \.self) { document in
-            // Each document navigates to its detail view.
-            NavigationLink(destination: DocumentDetailView(document: document)) {
-                Text(document)
+        NavigationView {
+            List(filteredAgentOptions, id: \.self) { agent in
+                Button(action: {
+                    onAgentSelected(agent)
+                }) {
+                    Text(agent)
+                }
+            }
+            // Add a search bar in the navigation bar drawer
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+            .navigationTitle("Agent")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        dismiss()  // Dismiss the sheet.
+                    }
+                }
             }
         }
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
-        .navigationTitle("Select Document")
     }
 }
 
-// MARK: - DocumentDetailView
-
-struct DocumentDetailView: View {
-    let document: String
-        
-        var body: some View {
-            ScrollView {
-                VStack(spacing: 20) {
-                    
-                    // Header image or team logo – replace with your actual asset name
-                    Image("BUSA")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 150)
-                        .clipShape(Circle())
-                        .shadow(radius: 5)
-                        .padding(.top, 20)
-                    
-                    // Team name and tagline
-                    VStack(spacing: 6) {
-                        Text(document)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        
-                        Text("Professional Soccer Club")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    // Quick stats section
-                    HStack(spacing: 40) {
-                        VStack {
-                            Text("Founded")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("2006")
-                                .font(.headline)
-                        }
-                        Divider()
-                        VStack {
-                            Text("State")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("Alabama")
-                                .font(.headline)
-                        }
-                        Divider()
-                        VStack {
-                            Text("Stadium")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("Regions")
-                                .font(.headline)
-                        }
-                    }
-                    .padding(.vertical, 10)
-                    
-                    // A brief description or history
-                    Text("""
-                    \(document) is one of the most renowned soccer clubs in the league. 
-                    With a rich history dating back to the late 21st century, they have 
-                    won numerous championships and remain a powerhouse in today’s modern game.
-                    """)
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal)
-                    
-                    // Some highlights or achievements
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Key Achievements")
-                            .font(.headline)
-                        Text("• 10x League Champions")
-                        Text("• 5x National Cup Winners")
-                        Text("• 2x Continental Cup Winners")
-                    }
-                    .padding(.horizontal)
-                    
-                    // Spacing at the bottom
-                    Spacer(minLength: 30)
-                }
-                .padding(.bottom, 20)
-            }
-            .navigationTitle(document)
-            .navigationBarTitleDisplayMode(.inline)
-        }
-}
