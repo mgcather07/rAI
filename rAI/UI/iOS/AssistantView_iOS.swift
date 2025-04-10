@@ -76,7 +76,7 @@ struct AssistantView: View {
                 
                 // MARK: - Input Field and Send Button
                 HStack {
-                    TextField("rAI is here to help...", text: $inputText)
+                    TextField("Message rAI", text: $inputText)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
                     Button("Send") {

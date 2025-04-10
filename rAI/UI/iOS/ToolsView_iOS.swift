@@ -5,6 +5,7 @@
 //  Created by Michael Cather on 4/9/25.
 //
 
+
 import Foundation
 import SwiftUI
 
@@ -75,8 +76,8 @@ struct ToolsView: View {
                 
                 // MARK: - Input Field and Send Button
                 HStack {
-                    TextField("rAI is here to help...", text: $inputText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("Message rAI", text: $inputText)
+                        .textFieldStyle(PlainTextFieldStyle())
                     
                     Button("Send") {
                         guard !inputText.isEmpty else { return }
@@ -96,16 +97,27 @@ struct ToolsView: View {
                 }
                 .padding()
             }
-            .navigationBarTitle("Tools")
-            .navigationBarTitleDisplayMode(.large)
-            // MARK: - Toolbar with Underlined Select Tool Button
+            // Remove the large navigation title since we’re using custom toolbar items.
+            //.navigationBarTitle("Tools")
+            //.navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                // Center the "Select Tool" button using the .principal placement.
+                ToolbarItem(placement: .principal) {
                     Button(action: {
                         showToolSheet = true
                     }) {
                         Text(selectedTool)
                             .underline()
+                            .font(.headline)  // Adjust font if needed.
+                    }
+                }
+                // Trailing new chat / compose button using an SF Symbol.
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        startNewChat()
+                    }) {
+                        Image(systemName: "square.and.pencil")
+                            .imageScale(.large)
                     }
                 }
             }
@@ -118,6 +130,12 @@ struct ToolsView: View {
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
+    }
+    
+    /// A simple function to start a new chat. You can customize this to perform any new chat actions.
+    private func startNewChat() {
+        // Clears all messages to simulate starting a new chat.
+        messages.removeAll()
     }
 }
 
@@ -153,7 +171,7 @@ struct SelectTools: View {
                     Text(tool)
                 }
             }
-            // Add a search bar in the navigation bar drawer
+            // Add a search bar in the navigation bar drawer.
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .navigationTitle("Select Tool")
             .toolbar {

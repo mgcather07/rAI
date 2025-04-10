@@ -160,7 +160,3 @@ struct EmptyConversaitonView: View, KeyboardReadable {
     }
 }
 
-#Preview {
-    EmptyConversaitonView(sendPrompt: { _ in })
-}
-
