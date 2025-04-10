@@ -41,7 +41,7 @@ struct AgentSelectorView: View {
                         
                         Text(selectedModel.prettyVersion)
                             .font(.subheadline)
-                            .foregroundColor(Color.gray3Custom)
+                            .foregroundColor(Color.gray)
                         #endif
                     }
                 }
@@ -50,7 +50,7 @@ struct AgentSelectorView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 10)
-                    .foregroundColor(Color(.label))
+            //        .foregroundColor(Color(.label))
                     .showIf(showChevron)
             }
         }

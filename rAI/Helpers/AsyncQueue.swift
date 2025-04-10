@@ -6,3 +6,17 @@
 //
 
 import Foundation
+
+actor AsyncQueue<T> {
+    private var items: [T] = []
+
+    func enqueue(_ item: T) {
+        items.append(item)
+    }
+
+    func dequeueAll() -> [T] {
+        defer { items.removeAll() }
+        return items
+    }
+}
+

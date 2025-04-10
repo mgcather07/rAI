@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct LoginView: View {
     @State private var username: String = ""
     @State private var password: String = ""
@@ -16,29 +15,32 @@ struct LoginView: View {
     var body: some View {
         VStack {
             Spacer()
-            
+
             VStack(spacing: 20) {
+                // Title section with adjusted font sizes per platform.
                 Text("Welcome to ")
-                    .font(.system(size: 60, weight: .semibold))
+                    .font(titleFont())
                     .foregroundColor(.primary)
-                    
+                
                 Text("rAI")
-                    .font(.system(size: 100, weight: .semibold))
+                    .font(logoFont())
                     .foregroundColor(.red)
                     .italic()
                 
+                // Form fields for username and password.
                 VStack(spacing: 15) {
                     TextField("Username", text: $username)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .textFieldStyle(commonTextFieldStyle())
                         .padding(.horizontal)
                     
                     SecureField("Password", text: $password)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .textFieldStyle(commonTextFieldStyle())
                         .padding(.horizontal)
                 }
                 
+                // Login button with platform-specific styling.
                 Button(action: {
-                    // Dummy login: simply trigger the onLogin callback.
+                    // Dummy login: triggers the onLogin callback.
                     onLogin()
                 }) {
                     Text("Login")
@@ -48,13 +50,53 @@ struct LoginView: View {
                         .background(Color.accentColor)
                         .foregroundColor(.white)
                         .cornerRadius(10)
-                        .padding(.horizontal)
                 }
+                #if os(macOS)
+                .buttonStyle(PlainButtonStyle())
+                #endif
+                .padding(.horizontal)
             }
             .frame(maxWidth: 500)
             
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // Extra padding might be useful on macOS.
+        #if os(macOS)
+        .padding()
+        #endif
+    }
+    
+    // Helper method to adjust title font based on platform.
+    private func titleFont() -> Font {
+        #if os(iOS)
+        return .system(size: 60, weight: .semibold)
+        #elseif os(macOS)
+        return .system(size: 48, weight: .semibold)
+        #else
+        return .headline
+        #endif
+    }
+    
+    // Helper method to adjust logo font based on platform.
+    private func logoFont() -> Font {
+        #if os(iOS)
+        return .system(size: 100, weight: .semibold)
+        #elseif os(macOS)
+        return .system(size: 80, weight: .semibold)
+        #else
+        return .largeTitle
+        #endif
+    }
+    
+    // Adjust text field style for each platform.
+    private func commonTextFieldStyle() -> some TextFieldStyle {
+        #if os(iOS)
+        return RoundedBorderTextFieldStyle()
+        #elseif os(macOS)
+        return PlainTextFieldStyle()
+        #else
+        return DefaultTextFieldStyle()
+        #endif
     }
 }

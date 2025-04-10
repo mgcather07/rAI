@@ -19,11 +19,117 @@ struct HomeDashboardView: View, KeyboardReadable {
 #endif
     
 #if os(macOS)
-    var columns = Array.init(repeating: GridItem(.flexible(), spacing: 15), count: 4)
+    var columns = Array(repeating: GridItem(.flexible(), spacing: 15), count: 4)
 #else
     var columns = [GridItem(.flexible()), GridItem(.flexible())]
 #endif
     @State var visibleItems = Set<Int>()
+    
+    // Compute only the first 4 prompts
+    private var limitedPrompts: [AgentSamples] {
+        Array(prompts.prefix(4))
+    }
+    
+    // Title gradient for the "rAI" text
+    private var titleGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color(hex: "4285f4"),
+                Color(hex: "9b72cb"),
+                Color(hex: "d96570"),
+                Color(hex: "#d96570")
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+    
+    // Extracted header view containing the title and button.
+    var headerView: some View {
+        VStack(alignment: .center) {
+            Text("rAI")
+                .font(.system(size: 46, weight: .thin))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(titleGradient)
+            
+            Button(action: onRaiTap) {
+                Text("Information Assistant")
+                    .font(.system(size: isHovering ? 19 : 17, weight: .light))
+                    .scaleEffect(isHovering ? 1.05 : 1.0)
+                    .opacity(isHovering ? 0.8 : 1.0)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
+            }
+            .buttonStyle(.plain)
+            .onHover { hovering in
+                isHovering = hovering
+            }
+        }
+    }
+    
+    // A dedicated view for each prompt button.
+    struct HomePromptButtonView: View {
+        let prompt: AgentSamples
+        let index: Int
+        let visibleItems: Set<Int>
+        let showPromptsAnimation: Bool
+        let sendPrompt: (String) -> ()
+        
+        var body: some View {
+            Button(action: {
+                withAnimation {
+                    sendPrompt(prompt.agent)
+                }
+            }) {
+                VStack(alignment: .leading) {
+                    Text(prompt.agent)
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.white)
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Image(systemName: prompt.type.icon)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(15)
+                .background(Color.red)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .opacity(visibleItems.contains(index) ? 1 : 0)
+            .animation(.easeIn(duration: 0.3).delay(0.2 * Double(index)), value: visibleItems)
+            .transition(.slide)
+            .showIf(showPromptsAnimation)
+            .buttonStyle(.plain)
+        }
+    }
+    
+    // Extracted grid view for the prompts.
+    // Extracted grid view for the prompts.
+    var promptGrid: some View {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 15) {
+            ForEach(limitedPrompts.indices, id: \.self) { index in
+                HomePromptButtonView(
+                    prompt: limitedPrompts[index],
+                    index: index,
+                    visibleItems: visibleItems,
+                    showPromptsAnimation: showPromptsAnimation,
+                    sendPrompt: sendPrompt
+                )
+            }
+        }
+        .onAppear {
+            for index in 0..<limitedPrompts.count {
+                DispatchQueue.main.async {
+                    visibleItems.insert(index)
+                }
+            }
+        }
+        .frame(maxWidth: 700)
+        .background(Color.pink)
+        .padding()
+        .transition(AnyTransition.opacity.combined(with: .slide))
+    }
+
     
     func onRaiTap() {
         if let url = URL(string: "https://chat.vaatu.co") {
@@ -36,76 +142,10 @@ struct HomeDashboardView: View, KeyboardReadable {
             Spacer()
             
             VStack(spacing: 25) {
-                VStack(alignment: .center) {
-                    Text("rAI")
-                        .font(Font.system(size: 46, weight: .thin))
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [Color(hex: "4285f4"), Color(hex: "9b72cb"), Color(hex: "d96570"), Color(hex: "#d96570")],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                    
-                    Button(action: onRaiTap) {
-                        Text("Information Assistant")
-                            .font(.system(size: isHovering ? 19 : 17, weight: .light))
-                            .scaleEffect(isHovering ? 1.05 : 1.0)
-                            .opacity(isHovering ? 0.8 : 1.0)
-                            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
-
-                    }
-                    .buttonStyle(.plain)
-                    .onHover { hovering in
-                                isHovering = hovering
-                            }
-                }
-                
-                LazyVGrid(columns: columns, alignment: .leading, spacing: 15) {
-                    ForEach(0..<prompts.prefix(4).count, id: \.self) { index in
-                        Button(action: {
-                            withAnimation {
-                                sendPrompt(prompts[index].agent)
-                            }
-                        }) {
-                            VStack(alignment: .leading) {
-                                Text(prompts[index].agent)
-                                    .font(.system(size: 15))
-                                Spacer()
-                                
-                                HStack {
-                                    Spacer()
-                                    Image(systemName: prompts[index].type.icon)
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(15)
-                            .background(Color.gray5Custom)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            
-                        }
-                        .opacity(visibleItems.contains(index) ? 1 : 0)
-                        .animation(.easeIn(duration: 0.3).delay(0.2 * Double(index)), value: visibleItems)
-                        .transition(.slide)
-                        .showIf(showPromptsAnimation)
-                        .buttonStyle(.plain)
-                    }
-                }
-                .onAppear {
-                    for index in 0..<4 {
-                        DispatchQueue.main.async {
-                            visibleItems.insert(index)
-                        }
-                    }
-                }
-                .frame(maxWidth: 700)
-                .padding()
-                .transition(AnyTransition(.opacity).combined(with: .slide))
-#if os(iOS)
-                .showIf(!isKeyboardVisible)
-#endif
+                headerView
+                promptGrid
             }
+            
             Spacer()
         }
         .onAppear {
@@ -125,10 +165,10 @@ struct HomeDashboardView: View, KeyboardReadable {
             }
         }
 #endif
-        
     }
 }
 
-#Preview {
-    HomeDashboardView(sendPrompt: {_ in})
-}
+//#Preview {
+//    HomeDashboardView(sendPrompt: { _ in })
+//}
+

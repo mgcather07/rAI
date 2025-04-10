@@ -8,25 +8,56 @@
 import SwiftUI
 import SwiftData
 
+#if os(macOS)
+import KeyboardShortcuts
+extension KeyboardShortcuts.Name {
+    static let togglePanelMode = Self("togglePanelMode1", default: .init(.k, modifiers: [.command, .option]))
+}
+#endif
+
 @main
 struct rAIApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-
+    @State private var appStore = AppStore.shared
+    @State private var isLoggedIn = false
+    
+    #if os(macOS)
+        @NSApplicationDelegateAdaptor(PanelManager.self) var panelManager
+    #endif
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Group {
+                if isLoggedIn {
+                    HomeDashboard_iOS()
+                } else {
+                    LoginView {
+                        // Login action
+                        withAnimation {
+                            isLoggedIn = true
+                        }
+                    }
+                }
+            }
+        #if os(macOS)
+            .onKeyboardShortcut(KeyboardShortcuts.Name.togglePanelMode, type: .keyDown) {
+                print("heya")
+                panelManager.togglePanel()
+            }
+            .onAppear {
+                NSWindow.allowsAutomaticWindowTabbing = false
+            }
+        #endif
         }
-        .modelContainer(sharedModelContainer)
+#if os(macOS)
+        .commands {
+            Menus()
+        }
+#endif
+#if os(macOS)
+        Window("Keyboard Shortcuts", id: "keyboard-shortcuts") {
+            KeyboardShortcutsDemo()
+        }
+#endif
     }
 }
+

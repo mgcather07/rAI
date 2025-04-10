@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+enum ConversationState: Equatable {
+    case loading
+    case completed
+    case error(message: String)
+}
+
